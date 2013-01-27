@@ -17,6 +17,10 @@ class TestCase():
         self.parse_arguments()
 
         self.chrome_driver = service.Service('/home/vvoody/.virtualenvs/selenium/bin/chromedriver')
+        self.load_time = []
+
+        # some kind of ID of a test
+        self.when = datetime.now().strftime("%s")
 
         self.protocol = self.args.protocol
         self.chrome_options = self.decide_chrome_startup_options()
@@ -63,6 +67,7 @@ class TestCase():
         self.parser.add_argument('-d', '--net-dw-bw', help='downlink bandwidth of network(kbit/s)', required=True)
         self.parser.add_argument('-r', '--net-rtt', help='RTT of network(millisecond)', required=True)
         self.parser.add_argument('-v', '--verbosity', help='more debug info', action='store_true')
+        self.parser.add_argument('-x', '--dont-save', help='more debug info', action='store_true')
         self.args = self.parser.parse_args()
 
     def run(self):
@@ -76,20 +81,20 @@ class TestCase():
             start = datetime.now()
             driver.get(self.request_url)
             end = datetime.now()
-            self.load_time = (end - start).total_seconds()
-            print "Load time: %f" % self.load_time
+            t = (end - start).total_seconds()
+            print "Load time: %f" % t
+            self.load_time.append(t)
 
             time.sleep(1)
             driver.quit()
             time.sleep(1)
-
         self.stop()
 
     def stop(self):
         self.chrome_driver.stop()
 
-    def save():
-        pass
+    def save(self):
+        print "Saving the testing data..."
 
 def main():
     # try here to close chromedriver server
@@ -100,7 +105,11 @@ def main():
         print str(e)
         print "chromedriver to be stopped."
         test.stop()
-    # test.save()
+
+    if test.args.dont_save:
+        print "Test data not saved to database."
+    else:
+        test.save()
 
 if __name__ == '__main__':
     main()
