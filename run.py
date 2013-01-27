@@ -16,6 +16,8 @@ class TestCase():
         self.parser = argparse.ArgumentParser()
         self.parse_arguments()
 
+        self.chrome_driver = service.Service('/home/vvoody/.virtualenvs/selenium/bin/chromedriver')
+
         self.protocol = self.args.protocol
         self.chrome_options = self.decide_chrome_startup_options()
         self.ssl = self.args.ssl
@@ -64,11 +66,10 @@ class TestCase():
         self.args = self.parser.parse_args()
 
     def run(self):
-        srv = service.Service('/home/vvoody/.virtualenvs/selenium/bin/chromedriver')
-        srv.start()
+        self.chrome_driver.start()
         time.sleep(1)
         for i in range(self.args.times):
-            driver = webdriver.Remote(srv.service_url, self.chrome_options)
+            driver = webdriver.Remote(self.chrome_driver.service_url, self.chrome_options)
             time.sleep(2)
 
             print "No. of test: %d." % i
@@ -81,14 +82,25 @@ class TestCase():
             time.sleep(1)
             driver.quit()
             time.sleep(1)
-        srv.stop()
+
+        self.stop()
+
+    def stop(self):
+        self.chrome_driver.stop()
 
     def save():
         pass
 
 def main():
-    test = TestCase()
-    test.run()
+    # try here to close chromedriver server
+    try:
+        test = TestCase()
+        test.run()
+    except Exception, e:
+        print str(e)
+        print "chromedriver to be stopped."
+        test.stop()
+    # test.save()
 
 if __name__ == '__main__':
     main()
