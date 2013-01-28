@@ -17,10 +17,10 @@ class TestCase():
         self.parse_arguments()
 
         self.chrome_driver = service.Service('/home/vvoody/.virtualenvs/selenium/bin/chromedriver')
-        self.load_time = []
+        self.results = []
 
         # some kind of ID of a test
-        self.when = datetime.now().strftime("%s")
+        self.when = int(datetime.utcnow().strftime("%s"))
 
         self.protocol = self.args.protocol
         self.chrome_options = self.decide_chrome_startup_options()
@@ -73,19 +73,21 @@ class TestCase():
     def run(self):
         self.chrome_driver.start()
         time.sleep(1)
+        print "Test started at UTC time: %d." % self.when
+
         for i in range(self.args.times):
             driver = webdriver.Remote(self.chrome_driver.service_url, self.chrome_options)
             time.sleep(2)
 
             print "No. of test: %d." % i
-            start = datetime.now()
+            start = datetime.utcnow()
             driver.get(self.request_url)
-            end = datetime.now()
+            end = datetime.utcnow()
             t = (end - start).total_seconds()
             print "Load time: %f" % t
-            self.load_time.append(t)
+            self.results.append(t)
 
-            time.sleep(1)
+            time.sleep(2)
             driver.quit()
             time.sleep(1)
         self.stop()
@@ -94,7 +96,28 @@ class TestCase():
         self.chrome_driver.stop()
 
     def save(self):
-        print "Saving the testing data..."
+        import pymongo
+
+        conn = pymongo.Connection("mongodb://localhost", safe=True)
+        db = conn.thesis
+        benchmarks = db.benchmarks
+
+        try:
+            benchmarks.insert({'when': self.when,
+                               'protocol': self.protocol,
+                               'ssl': self.ssl,
+                               'net_type': self.net_type,
+                               'net_up_bw': self.net_up_bw,
+                               'net_dw_bw': self.net_dw_bw,
+                               'net_rtt': self.net_rtt,
+                               'net_loss': self.net_loss,
+                               'results': self.results,
+                               'load_time': sum(self.results) / len(self.results)
+                               })
+        except Exception, e:
+            print str(e)
+        else:
+            print "Test data saved to database."
 
 def main():
     # try here to close chromedriver server
