@@ -45,9 +45,11 @@ class TestCase():
         elif self.protocol == 'spdy':
             # server should be 'SpdyEnabled off' and
             # Chrome supports SPDY by default
-            pass
+            if self.args.ssl is False:
+                # server: SpdyDebugUseSpdyForNonSslConnections 2
+                opts.add_argument('--use-spdy=no-ssl')
         elif self.protocol == 'http-pipelining':
-            opts.add_argument('--use-spdy=off')
+            # server should be 'SpdyEnabled off'
             opts.add_argument('--enable-http-pipelining')
         else:
             print "Won't reach here."
@@ -67,6 +69,7 @@ class TestCase():
         self.parser.add_argument('-r', '--net-rtt', help='RTT of network(millisecond)', required=True)
         self.parser.add_argument('-v', '--verbosity', help='more debug info', action='store_true')
         self.parser.add_argument('-x', '--dont-save', help='more debug info', action='store_true')
+        self.parser.add_argument('-z', '--holdon', help='seconds to hold on after page loaded', type=int, default=1)
         self.args = self.parser.parse_args()
 
     def run(self):
@@ -86,7 +89,7 @@ class TestCase():
             print "Load time: %f" % t
             self.results.append(t)
 
-            time.sleep(2)
+            time.sleep(self.args.holdon)
             driver.quit()
             time.sleep(1)
         self.stop()
@@ -117,6 +120,7 @@ class TestCase():
             print str(e)
         else:
             print "Test data saved to database."
+            conn.close()
 
 def main():
     # try here to close chromedriver server
