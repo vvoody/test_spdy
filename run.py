@@ -1,5 +1,6 @@
 import argparse
 import time
+import json
 from datetime import datetime
 
 from selenium import webdriver
@@ -15,7 +16,9 @@ class TestCase():
         self.parser = argparse.ArgumentParser()
         self.parse_arguments()
 
-        self.chrome_driver = service.Service('/home/vvoody/.virtualenvs/selenium/bin/chromedriver')
+        self.load_conf()
+
+        self.chrome_driver = service.Service(self.CHROME_DRIVER_PATH)
         self.results = []
 
         # some kind of ID of a test
@@ -29,11 +32,18 @@ class TestCase():
         self.net_dw_bw = self.args.net_dw_bw
         self.net_rtt = self.args.net_rtt
         self.net_loss = self.args.net_loss
-        self.request_url = ('https' if self.ssl else 'http') + '://en.m.wikipedia.org/wiki/Lionel_Messi.html'
+        self.request_url = ('https' if self.ssl else 'http') + self.REQUEST_PATH
 
         if self.args.verbosity:
             print self.args
             print self.chrome_options
+
+    def load_conf(self):
+        with open('config.json', 'r') as f:
+            config = json.load(f)
+
+        self.CHROME_DRIVER_PATH = config['chrome_driver_path']
+        self.REQUEST_PATH = config['request_path']
 
     def decide_chrome_startup_options(self):
         opts = Options()
@@ -92,7 +102,6 @@ class TestCase():
             time.sleep(self.args.holdon)
             driver.quit()
             time.sleep(1)
-        self.stop()
 
     def stop(self):
         self.chrome_driver.stop()
@@ -124,12 +133,13 @@ class TestCase():
 
 def main():
     # try here to close chromedriver server
+    test = TestCase()
     try:
-        test = TestCase()
         test.run()
     except Exception, e:
         print str(e)
         print "chromedriver to be stopped."
+    finally:
         test.stop()
 
     if test.args.dont_save:
