@@ -22,6 +22,8 @@ If you want an asymmetric network, you can use '-d' or '-u' option to
 set different bandwidth for downlink or uplink respectively. When one
 of them is used, it will override the value set by the '-b' option.
 Otherwise, use the value of '-b' option for the other link.
+
+NOTE: This script requires 'bc' command.
 EOF
 }
 
@@ -98,5 +100,5 @@ $DEBUG ipfw add 2 pipe 2 ip from any to any out  # downlink
 
 # network condition may be not symmetric
 # bw: bandwidth, delay: RTT, plr: packet loss
-$DEBUG ipfw pipe 1 config bw "${BW_UP}kbit/s" delay "${RTT}ms" plr "$LOSS"
-$DEBUG ipfw pipe 2 config bw "${BW_DW}kbit/s" delay "${RTT}ms" plr "$LOSS"
+$DEBUG ipfw pipe 1 config bw "${BW_UP}kbit/s" delay $( echo "$RTT/2" | bc)ms plr $( echo "scale=3; $LOSS/2" | bc)
+$DEBUG ipfw pipe 2 config bw "${BW_DW}kbit/s" delay $( echo "$RTT/2" | bc)ms plr $( echo "scale=3; $LOSS/2" | bc)
