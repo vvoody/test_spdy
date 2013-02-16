@@ -95,8 +95,8 @@ $DEBUG ipfw flush -f
 $DEBUG echo "Flush done."
 
 
-$DEBUG ipfw add 1 pipe 1 ip from any to any in   # uplink
-$DEBUG ipfw add 2 pipe 2 ip from any to any out  # downlink
+$DEBUG ipfw add 1 pipe 1 ip from any to any http,https in   # uplink
+$DEBUG ipfw add 2 pipe 2 ip from any http,https to any out  # downlink
 
 # network condition may be not symmetric
 # bw: bandwidth, delay: RTT, plr: packet loss

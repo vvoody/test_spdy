@@ -32,18 +32,22 @@ class TestCase():
         self.net_dw_bw = self.args.net_dw_bw
         self.net_rtt = self.args.net_rtt
         self.net_loss = self.args.net_loss
-        self.request_url = ('https' if self.ssl else 'http') + self.REQUEST_PATH
+        self.request_url = ('https' if self.ssl else 'http') + '://' + self.REQUEST_PATH
 
         if self.args.verbosity:
             print self.args
             print self.chrome_options
+            print self.conf
 
     def load_conf(self):
         with open('config.json', 'r') as f:
             config = json.load(f)
+            self.conf = config
 
         self.CHROME_DRIVER_PATH = config['chrome_driver_path']
         self.REQUEST_PATH = config['request_path']
+        self.DB = config['db']
+        self.COLLECTION = config['collection']
 
     def decide_chrome_startup_options(self):
         opts = Options()
@@ -92,6 +96,7 @@ class TestCase():
             time.sleep(2)
 
             print "No. of test: %d." % i
+            print self.request_url
             start = datetime.utcnow()
             driver.get(self.request_url)
             end = datetime.utcnow()
@@ -110,11 +115,11 @@ class TestCase():
         import pymongo
 
         conn = pymongo.Connection("mongodb://localhost", safe=True)
-        db = conn.thesis
-        benchmarks = db.benchmarks
+        db = conn[self.DB]
+        collection = db[self.COLLECTION]
 
         try:
-            benchmarks.insert({'when': self.when,
+            collection.insert({'when': self.when,
                                'protocol': self.protocol,
                                'ssl': self.ssl,
                                'net_type': self.net_type,
