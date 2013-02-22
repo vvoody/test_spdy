@@ -130,8 +130,8 @@ class TestCase():
                                'results': self.results,
                                'load_time': sum(self.results) / len(self.results)
                                })
-        except Exception, e:
-            print str(e)
+        except Exception as e:
+            print "ERROR({0}): {1}".format(e.errno, e.strerror)
         else:
             print "Test data saved to database."
             conn.close()
@@ -141,8 +141,8 @@ def main():
     test = TestCase()
     try:
         test.run()
-    except Exception, e:
-        print str(e)
+    except Exception as e:
+        print "ERROR({0}): {1}".format(e.errno, e.strerror)
         print "chromedriver to be stopped."
     finally:
         test.stop()
