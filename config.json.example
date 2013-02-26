@@ -1,6 +1,9 @@
 {
     "chrome_driver_path": "/path/to/your/chromedriver",
-    "request_url": "://example.net/some_test.html"
+    "request_path": "example.net/some_test.html"
     "db": "yourdb",
     "collection": "yourcollection"
+    "dbuser" : "USERNAME",
+    "dbpasswd" : "PASSWORD",
+    "dbhost" : "LOCALHOST"
 }

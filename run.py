@@ -44,10 +44,13 @@ class TestCase():
             config = json.load(f)
             self.conf = config
 
-        self.CHROME_DRIVER_PATH = config['chrome_driver_path']
-        self.REQUEST_PATH = config['request_path']
-        self.DB = config['db']
-        self.COLLECTION = config['collection']
+        self.CHROME_DRIVER_PATH = config.get('chrome_driver_path')
+        self.REQUEST_PATH = config.get('request_path')
+        self.DB = config.get('db')
+        self.COLLECTION = config.get('collection')
+        self.DBUSER = config.get('dbuser')
+        self.DBPASSWD = config.get('dbpasswd')
+        self.DBHOST = config.get('dbhost')
 
     def decide_chrome_startup_options(self):
         opts = Options()
@@ -111,10 +114,16 @@ class TestCase():
     def stop(self):
         self.chrome_driver.stop()
 
+    def get_mongodb_uri(self):
+        host = 'localhost' if self.DBHOST is None else self.DBHOST
+        user_passwd_str = '' if self.DBUSER is None else '{0}:{1}@'.format(self.DBUSER, self.DBPASSWD)
+        uri = "mongodb://{0}{1}/{2}".format(user_passwd_str, host, self.DB)
+        return uri
+
     def save(self):
         import pymongo
 
-        conn = pymongo.Connection("mongodb://localhost", safe=True)
+        conn = pymongo.Connection(self.get_mongodb_uri(), safe=True)
         db = conn[self.DB]
         collection = db[self.COLLECTION]
 
