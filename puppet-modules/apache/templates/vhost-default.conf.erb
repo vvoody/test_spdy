@@ -1,0 +1,29 @@
+# ************************************
+# Default template in module puppetlabs-apache
+# Managed by Puppet
+# ************************************
+
+<VirtualHost <%= vhost_ip %>:<%= port %>>
+  ServerName <%= srvname %>
+<% if serveraliases.is_a? Array -%>
+<% serveraliases.each do |name| -%><%= "  ServerAlias #{name}\n" %><% end -%>
+<% elsif serveraliases != '' -%>
+<%= "  ServerAlias #{serveraliases}" -%>
+<% end -%>
+  DocumentRoot <%= document_root %>
+  <Directory <%= document_root %>>
+    Options <%= options %>
+    AllowOverride None
+    Order allow,deny
+    allow from all
+  </Directory>
+  ErrorLog <%= logdir %>/<%= name %>_error.log
+  LogLevel warn
+  CustomLog <%= logdir %>/<%= name %>_access.log combined
+  ServerSignature Off
+<% if ssl_enabled == "true" %>
+  SSLEngine on
+  SSLCertificateFile    <%= cert_file %>
+  SSLCertificateKeyFile <%= cert_keyfile %>
+<% end %>
+</VirtualHost>
