@@ -16,7 +16,7 @@ else
     exit 1
 fi
 
-
+RUN_TIMES=5
 # 'vagrant' host should be existed in ~/.ssh/config
 REMOTE=${REMOTE:-vagrant}
 # PROTOCOL should be lowercase, otherwise puppet cannot find the class.
@@ -68,7 +68,7 @@ EOF
     curl -s -m 5 "http://${URL}" 2&>1 >/dev/null
     curl -s -m 5 "https://${URL}" 2&>1 >/dev/null
     $DEBUG sleep 2
-    $DEBUG python run.py -p ${PROTOCOL,,} $SSL_OPT -n $NETWORK ${ARGS_STR} $var -t 10 -v
+    $DEBUG python run.py -p ${PROTOCOL,,} $SSL_OPT -n $NETWORK ${ARGS_STR} $var -t $RUN_TIMES -v
 
     # first time will fail for unknown reason, have to try twice.
     $DEBUG fab -H $REMOTE reset_net
