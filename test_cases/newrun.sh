@@ -1,7 +1,11 @@
 #!/bin/bash
 
-# Run a complete round test of 1 protocol under 1 network.
-# SSL and non-ssl are two sperate round.
+# Run a complete round test of 1 protocol under all network combinations,
+# which comprise all RTT and DW_BW.
+#
+# SSL and non-ssl are two sperate rounds.
+#
+# use 'DEBUG=echo bash $0' to do a dry run.
 
 # $1 is the test case config file.
 if [ $# -ne 1 ]; then
