@@ -79,7 +79,7 @@ class TestCase():
                                  choices=['http', 'spdy', 'http-pipelining'], required=True)
         self.parser.add_argument('-s', '--ssl', help='SSL enabled', action='store_true')
         self.parser.add_argument('-n', '--net-type', help='network condition',
-                                 choices=['EDGE', '3G', '4G'], required=True)
+                                 choices=['EDGE', '3G', '4G', 'ALL'], required=True)
         self.parser.add_argument('-l', '--net-loss', help='packet loss ratio of network(percent)', required=True)
         self.parser.add_argument('-u', '--net-up-bw', help='uplink bandwidth of network(kbit/s)', required=True)
         self.parser.add_argument('-d', '--net-dw-bw', help='downlink bandwidth of network(kbit/s)', required=True)
