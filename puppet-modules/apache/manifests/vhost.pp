@@ -84,13 +84,13 @@ define apache::vhost(
 
     if $ssl_enabled == "true" {  # HTTPS
       file { $cert_file:
-        ensure => link,
+        ensure => file,
         target => "$apache::ownmodules/files/certs/${srvname}/${srvname}.crt",
         notify  => Service[$service_name],
       }
 
       file { $cert_keyfile:
-        ensure => link,
+        ensure => file,
         target => "$apache::ownmodules/files/certs/${srvname}/${srvname}.key",
         notify  => Service[$service_name],
       }
