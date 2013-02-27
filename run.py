@@ -120,6 +120,11 @@ class TestCase():
         uri = "mongodb://{0}{1}/{2}".format(user_passwd_str, host, self.DB)
         return uri
 
+    def dump_results_to_file(self, ds):
+        with open('results.json', 'a') as f:
+            json.dump(ds, f)
+            f.write('\n')
+
     def save(self):
         import pymongo
 
@@ -127,20 +132,24 @@ class TestCase():
         db = conn[self.DB]
         collection = db[self.COLLECTION]
 
+        ds = {'when': self.when,
+              'protocol': self.protocol,
+              'ssl': self.ssl,
+              'net_type': self.net_type,
+              'net_up_bw': self.net_up_bw,
+              'net_dw_bw': self.net_dw_bw,
+              'net_rtt': self.net_rtt,
+              'net_loss': self.net_loss,
+              'results': self.results,
+              'load_time': sum(self.results) / len(self.results),
+              'deviation': 0,
+              }
+
         try:
-            collection.insert({'when': self.when,
-                               'protocol': self.protocol,
-                               'ssl': self.ssl,
-                               'net_type': self.net_type,
-                               'net_up_bw': self.net_up_bw,
-                               'net_dw_bw': self.net_dw_bw,
-                               'net_rtt': self.net_rtt,
-                               'net_loss': self.net_loss,
-                               'results': self.results,
-                               'load_time': sum(self.results) / len(self.results)
-                               })
+            collection.insert(ds)
         except Exception as e:
             print "ERROR({0}): {1}".format(e.errno, e.strerror)
+            self.dump_results_to_file(ds)
         else:
             print "Test data saved to database."
             conn.close()
