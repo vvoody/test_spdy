@@ -21,7 +21,7 @@ else
 fi
 
 LOG_FILE=run.log
-RUN_TIMES=1
+RUN_TIMES=5
 # 'vagrant' host should be existed in ~/.ssh/config
 REMOTE=${REMOTE:-vagrant}
 # PROTOCOL should be lowercase, otherwise puppet cannot find the class.
