@@ -128,10 +128,6 @@ class TestCase():
     def save(self):
         import pymongo
 
-        conn = pymongo.Connection(self.get_mongodb_uri(), safe=True)
-        db = conn[self.DB]
-        collection = db[self.COLLECTION]
-
         ds = {'when': self.when,
               'protocol': self.protocol,
               'ssl': self.ssl,
@@ -146,6 +142,9 @@ class TestCase():
               }
 
         try:
+            conn = pymongo.Connection(self.get_mongodb_uri(), safe=True)
+            db = conn[self.DB]
+            collection = db[self.COLLECTION]
             collection.insert(ds)
         except Exception as e:
             print "ERROR({0}): {1}".format(e.errno, e.strerror)
