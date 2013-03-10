@@ -147,7 +147,7 @@ class TestCase():
             collection = db[self.COLLECTION]
             collection.insert(ds)
         except Exception as e:
-            print "ERROR({0}): {1}".format(e.errno, e.strerror)
+            print "ERROR: %s " % str(e)
             self.dump_results_to_file(ds)
         else:
             print "Test data saved to database."
