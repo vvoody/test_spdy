@@ -23,7 +23,7 @@ def main(json_file):
         of.write( ",%s\n" % ','.join(map(str, RTT_RANGE)) )
         for i in DW_BW_RANGE:
             of.write('%d,' % i)
-            row = ','.join(ds['DW%dRTT%d' % (i,j)] for j in RTT_RANGE )
+            row = ','.join(ds.get('DW%dRTT%d' % (i,j), '') for j in RTT_RANGE )
             of.write(row)
             of.write('\n')
 
